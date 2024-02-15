@@ -43,7 +43,7 @@ public class TransactionDaoJDBC implements TransactionDao {
                 preparedStatement.setString(4, transaction.getTransactionType());
                 preparedStatement.setDate(5, new Date(transaction.getDate().getTime()));
             }
-            preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate(); // execute the query
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
                 transaction.setId(resultSet.getInt(1));
