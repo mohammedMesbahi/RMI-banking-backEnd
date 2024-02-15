@@ -3,17 +3,17 @@ package estm.dsic.umi.beans;
 import java.util.List;
 
 public class Account {
-    private int id;
-    private int ownerId;
-    private double balance;
+    private Integer id;
+    private Integer ownerId;
+    private Double balance;
 
     private List<Transaction> transactions;
     /* setters and getters */
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public int getOwnerId() {
+    public Integer getOwnerId() {
         return ownerId;
     }
 
@@ -21,11 +21,11 @@ public class Account {
         return balance;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public void setOwnerId(int ownerId) {
+    public void setOwnerId(Integer ownerId) {
         this.ownerId = ownerId;
     }
 
@@ -53,7 +53,15 @@ public class Account {
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
-    
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", ownerId=" + ownerId +
+                ", balance=" + balance +
+                ", transactions=" + transactions +
+                '}';
+    }
 
 
 }

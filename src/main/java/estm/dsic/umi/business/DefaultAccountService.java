@@ -27,35 +27,17 @@ public class DefaultAccountService implements AccountService {
 
     @Override
     public Transaction deposit(Account Account, Double amount) {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(amount);
-        transaction.setSrcAccount(Account.getId());
-        transaction.setDestAccount(Account.getId());
-        transaction.setTransactionType(Transaction.DEPOSIT);
-        transaction.setDate(new java.util.Date());
-        return transactionService.createTransaction(transaction);
+        return AccountDaoJDBC.getInstance().deposit(Account, amount);
     }
 
     @Override
-    public void withdraw(Account Account, Double amount) {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(amount);
-        transaction.setSrcAccount(Account.getId());
-        transaction.setDestAccount(Account.getId());
-        transaction.setTransactionType(Transaction.WITHDRAW);
-        transaction.setDate(new java.util.Date());
-        transactionService.createTransaction(transaction);
+    public Transaction withdraw(Account Account, Double amount) {
+        return AccountDaoJDBC.getInstance().withdraw(Account, amount);
     }
 
     @Override
-    public void transfer(Account fromAccount, Account toAccount, Double amount) {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(amount);
-        transaction.setSrcAccount(fromAccount.getId());
-        transaction.setDestAccount(toAccount.getId());
-        transaction.setTransactionType(Transaction.TRANSFER);
-        transaction.setDate(new java.util.Date());
-        transactionService.createTransaction(transaction);
+    public Transaction transfer(Account fromAccount, Account toAccount, Double amount) {
+        return AccountDaoJDBC.getInstance().transfer(fromAccount, toAccount, amount);
     }
 
     @Override

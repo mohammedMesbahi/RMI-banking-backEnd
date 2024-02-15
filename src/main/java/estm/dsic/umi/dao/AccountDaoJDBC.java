@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import estm.dsic.umi.beans.Account;
+import estm.dsic.umi.beans.Transaction;
 import estm.dsic.umi.beans.User;
+import estm.dsic.umi.business.DefaultTransactionService;
 
 public class AccountDaoJDBC implements AccountDao {
     private static AccountDaoJDBC instance;
@@ -63,6 +65,96 @@ public class AccountDaoJDBC implements AccountDao {
             System.out.println("Error while getting accounts of a user" + e.getMessage());
         }
         return accounts;
+    }
+
+    @Override
+    public Transaction deposit(Account destAccount, Double amount) {
+        Transaction transaction = null;
+        String query = "UPDATE account SET balance = balance + " + amount + " WHERE account.id = " + destAccount.getId();
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+            if (statement.getUpdateCount() == 0) {
+                throw new SQLException("No account updated");
+            } else {
+                transaction = DefaultTransactionService.getInstance().createTransaction(
+                    new Transaction(
+                        amount,
+                        destAccount.getId(),
+                        destAccount.getId(),
+                        Transaction.DEPOSIT,
+                            new java.util.Date()
+                    ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while depositing");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error while depositing" + e.getMessage());
+        }
+        return transaction;
+    }
+
+    @Override
+    public Transaction withdraw(Account srcAccount, Double amount) {
+        Transaction transaction = null;
+        String query = "UPDATE account SET balance = balance - " + amount + " WHERE account.id = " + srcAccount.getId();
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+            if (statement.getUpdateCount() == 0) {
+                throw new SQLException("No account updated");
+            } else {
+                transaction = DefaultTransactionService.getInstance().createTransaction(
+                    new Transaction(
+                        amount,
+                        srcAccount.getId(),
+                        srcAccount.getId(),
+                        Transaction.WITHDRAWAL,
+                        new java.util.Date()
+                    ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while withdrawing");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error while withdrawing" + e.getMessage());
+        }
+        return transaction;
+    }
+
+    @Override
+    public Transaction transfer(Account srcAccount, Account destAccount, Double amount) {
+        Transaction transaction = null;
+        String query = "UPDATE account SET balance = balance - " + amount + " WHERE account.id = " + srcAccount.getId();
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+            if (statement.getUpdateCount() == 0) {
+                throw new SQLException("No account updated");
+            } else {
+                query = "UPDATE account SET balance = balance + " + amount + " WHERE account.id = " + destAccount.getId();
+                statement.executeUpdate(query);
+                if (statement.getUpdateCount() == 0) {
+                    throw new SQLException("No account updated");
+                } else {
+                    transaction = DefaultTransactionService.getInstance().createTransaction(
+                        new Transaction(
+                            amount,
+                            srcAccount.getId(),
+                            destAccount.getId(),
+                            Transaction.TRANSFER,
+                            new java.util.Date()
+                        ));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while transferring");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error while transferring" + e.getMessage());
+        }
+        return transaction;
     }
 
     public static AccountDaoJDBC getInstance() {

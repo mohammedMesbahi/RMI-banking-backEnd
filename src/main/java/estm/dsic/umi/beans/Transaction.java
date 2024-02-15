@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Transaction {
     public static final String DEPOSIT = "deposit";
-    public static final String WITHDRAW = "withdraw";
+    public static final String WITHDRAWAL = "withdraw";
     public static final String TRANSFER = "transfer";
     private Integer id;
     private Integer srcAccount;
@@ -12,6 +12,20 @@ public class Transaction {
     private Double amount;
     private String transactionType;
     private Date date;
+
+    public Transaction(Double amount, Integer srcAccount, Integer des, String deposit, Date date) {
+        this.amount = amount;
+        this.srcAccount = srcAccount;
+        this.destAccount = des;
+        this.transactionType = deposit;
+        this.date = date;
+    }
+
+    public Transaction() {
+
+    }
+
+
     /* setters and getters */
     public Integer getId() {
         return id;
@@ -59,6 +73,18 @@ public class Transaction {
 
     public void setDate(Date date) {
         this.date = date;
-    }  
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", srcAccount=" + srcAccount +
+                ", destAccount=" + destAccount +
+                ", amount=" + amount +
+                ", transactionType='" + transactionType + '\'' +
+                ", date=" + date +
+                '}';
+    }
 
 }

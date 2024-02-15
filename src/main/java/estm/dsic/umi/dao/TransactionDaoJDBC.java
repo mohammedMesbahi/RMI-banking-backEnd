@@ -7,12 +7,14 @@ import java.util.List;
 import estm.dsic.umi.beans.Account;
 import estm.dsic.umi.beans.Transaction;
 import estm.dsic.umi.beans.User;
+import estm.dsic.umi.business.DefaultAccountService;
 
 public class TransactionDaoJDBC implements TransactionDao {
-    private static TransactionDaoJDBC instance ;
+    private static TransactionDaoJDBC instance;
     private Connection connection;
+
     private TransactionDaoJDBC(Connection connection) {
-        this.connection=connection;       
+        this.connection = connection;
     }
 
 
@@ -20,13 +22,25 @@ public class TransactionDaoJDBC implements TransactionDao {
     public Transaction create(Transaction transaction) {
         // use prepared statement
         try {
-            String query = "INSERT INTO transaction (amount, srcAccount, destAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setDouble(1, transaction.getAmount());
-            preparedStatement.setInt(2, transaction.getSrcAccount());
-            preparedStatement.setInt(3, transaction.getDestAccount());
-            preparedStatement.setString(4, transaction.getTransactionType());
-            preparedStatement.setDate(5,(Date) transaction.getDate());
+            String query;
+            PreparedStatement preparedStatement;
+            if (transaction.getTransactionType().equals(Transaction.WITHDRAWAL)) {
+                query = "INSERT INTO transaction (amount, srcAccount, transactionType, date) VALUES (?, ?, ?, ?)";
+                preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setDouble(1, transaction.getAmount());
+                preparedStatement.setInt(2, transaction.getSrcAccount());
+                preparedStatement.setString(3, transaction.getTransactionType());
+                preparedStatement.setDate(4, new Date(transaction.getDate().getTime()));
+
+            } else {
+                query = "INSERT INTO transaction (amount, srcAccount, destAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
+                preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+                preparedStatement.setDouble(1, transaction.getAmount());
+                preparedStatement.setInt(2, transaction.getSrcAccount());
+                preparedStatement.setInt(3, transaction.getDestAccount());
+                preparedStatement.setString(4, transaction.getTransactionType());
+                preparedStatement.setDate(5, new Date(transaction.getDate().getTime()));
+            }
             preparedStatement.executeUpdate();
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -42,8 +56,8 @@ public class TransactionDaoJDBC implements TransactionDao {
     }
 
     public static TransactionDao getInstance() {
-        if(instance==null)
-            instance=new TransactionDaoJDBC(JDBCconnection.getConnection());
+        if (instance == null)
+            instance = new TransactionDaoJDBC(JDBCconnection.getConnection());
         return instance;
     }
 
@@ -51,7 +65,7 @@ public class TransactionDaoJDBC implements TransactionDao {
     public List<Transaction> getAllTransactionsOfAnAccount(Account account) {
         List<Transaction> transactions = new ArrayList<>();
         try {
-            String query = "SELECT * FROM transaction WHERE desAccount.id = " + account.getId() + " OR srcAccount.id = " + account.getId();
+            String query = "SELECT * FROM transaction WHERE destAccount = " + account.getId() + " OR srcAccount = " + account.getId();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
