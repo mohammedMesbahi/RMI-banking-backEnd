@@ -25,7 +25,7 @@ public class TransactionDaoJDBC implements TransactionDao {
             String query;
             PreparedStatement preparedStatement;
             if (transaction.getTransactionType().equals(Transaction.WITHDRAWAL)) {
-                query = "INSERT INTO transaction (amount, srcAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
+                query = "INSERT INTO transaction (amount, srcAccount,destAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
                 preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setDouble(1, transaction.getAmount());
                 preparedStatement.setInt(2, transaction.getSrcAccount());
