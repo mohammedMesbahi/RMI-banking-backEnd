@@ -25,12 +25,13 @@ public class TransactionDaoJDBC implements TransactionDao {
             String query;
             PreparedStatement preparedStatement;
             if (transaction.getTransactionType().equals(Transaction.WITHDRAWAL)) {
-                query = "INSERT INTO transaction (amount, srcAccount, transactionType, date) VALUES (?, ?, ?, ?)";
+                query = "INSERT INTO transaction (amount, srcAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
                 preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setDouble(1, transaction.getAmount());
                 preparedStatement.setInt(2, transaction.getSrcAccount());
-                preparedStatement.setString(3, transaction.getTransactionType());
-                preparedStatement.setDate(4, new Date(transaction.getDate().getTime()));
+preparedStatement.setInt(3, transaction.getSrcAccount());
+                preparedStatement.setString(4, transaction.getTransactionType());
+                preparedStatement.setDate(5, new Date(transaction.getDate().getTime()));
 
                 transaction.setDestAccount(-1);
 
