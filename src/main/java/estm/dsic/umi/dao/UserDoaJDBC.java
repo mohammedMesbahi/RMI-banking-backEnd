@@ -1,9 +1,7 @@
 package estm.dsic.umi.dao;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+
 import estm.dsic.umi.beans.User;
 
 public class UserDoaJDBC implements UserDao {
@@ -21,7 +19,6 @@ public class UserDoaJDBC implements UserDao {
     }
 
 
-
     @Override
     public User getById(Integer id) {
         User user = null;
@@ -36,7 +33,7 @@ public class UserDoaJDBC implements UserDao {
                 user.setEmail(resultSet.getString("email"));
                 user.setPassword(resultSet.getString("password"));
                 user.setAccounts(
-                    AccountDoaJDBC.getInstance().getAllAccountsOfAUser(user)
+                        AccountDoaJDBC.getInstance().getAllAccountsOfAUser(user)
                 );
             }
         } catch (SQLException e) {
@@ -52,9 +49,12 @@ public class UserDoaJDBC implements UserDao {
     @Override
     public User create(User user) {
         try {
-            String query = "INSERT INTO user (email, password) VALUES ('" + user.getEmail() + "', '" + user.getPassword() + "')";
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(query);
+            // creat a prepared statement
+            String query = "INSERT INTO user (email, password) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getPassword());
+            statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 user.setId(resultSet.getInt(1));
