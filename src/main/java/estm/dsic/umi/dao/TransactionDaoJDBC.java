@@ -32,6 +32,8 @@ public class TransactionDaoJDBC implements TransactionDao {
                 preparedStatement.setString(3, transaction.getTransactionType());
                 preparedStatement.setDate(4, new Date(transaction.getDate().getTime()));
 
+                transaction.setDestAccount(-1);
+
             } else {
                 query = "INSERT INTO transaction (amount, srcAccount, destAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
                 preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -65,18 +67,17 @@ public class TransactionDaoJDBC implements TransactionDao {
     public List<Transaction> getAllTransactionsOfAnAccount(Account account) {
         List<Transaction> transactions = new ArrayList<>();
         try {
-            String query = "SELECT * FROM transaction WHERE destAccount = " + account.getId() + " OR srcAccount = " + account.getId();
+            String query = "SELECT * FROM transaction WHERE destAccount=" + account.getId() + " OR srcAccount=" + account.getId();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
                 Transaction transaction = new Transaction();
-                transaction.setId(resultSet.getInt("transaction.id"));
+                transaction.setId(resultSet.getInt("id"));
                 transaction.setAmount(resultSet.getDouble("amount"));
                 transaction.setSrcAccount(resultSet.getInt("srcAccount"));
                 transaction.setDestAccount(resultSet.getInt("destAccount"));
                 transaction.setTransactionType(resultSet.getString("transactionType"));
                 transaction.setDate(resultSet.getDate("date"));
-                transaction.setId(account.getId());
                 transactions.add(transaction);
             }
         } catch (SQLException e) {

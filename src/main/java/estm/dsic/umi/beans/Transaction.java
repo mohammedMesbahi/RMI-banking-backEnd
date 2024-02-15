@@ -1,8 +1,9 @@
 package estm.dsic.umi.beans;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Transaction {
+public class Transaction implements Serializable {
     public static final String DEPOSIT = "deposit";
     public static final String WITHDRAWAL = "withdraw";
     public static final String TRANSFER = "transfer";

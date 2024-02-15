@@ -98,21 +98,22 @@ public class AccountDaoJDBC implements AccountDao {
     @Override
     public Transaction withdraw(Account srcAccount, Double amount) {
         Transaction transaction = null;
-        String query = "UPDATE account SET balance = balance - " + amount + " WHERE account.id = " + srcAccount.getId();
+        String query = "UPDATE account SET balance = balance - " + amount + " WHERE id=" + srcAccount.getId();
         try {
             Statement statement = connection.createStatement();
             statement.executeUpdate(query);
             if (statement.getUpdateCount() == 0) {
                 throw new SQLException("No account updated");
             } else {
+                Transaction tobeSaved = new Transaction(
+                    amount,
+                    srcAccount.getId(),
+                    srcAccount.getId(),
+                    Transaction.WITHDRAWAL,
+                    new java.util.Date()
+                );
                 transaction = DefaultTransactionService.getInstance().createTransaction(
-                    new Transaction(
-                        amount,
-                        srcAccount.getId(),
-                        srcAccount.getId(),
-                        Transaction.WITHDRAWAL,
-                        new java.util.Date()
-                    ));
+                   tobeSaved );
             }
         } catch (SQLException e) {
             System.out.println("Error while withdrawing");

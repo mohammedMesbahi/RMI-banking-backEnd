@@ -1,8 +1,9 @@
 package estm.dsic.umi.beans;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Account {
+public class Account implements Serializable {
     private Integer id;
     private Integer ownerId;
     private Double balance;

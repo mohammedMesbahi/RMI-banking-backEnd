@@ -1,12 +1,13 @@
 package estm.dsic.umi.beans;
 
+import java.io.Serializable;
 import java.util.List;
 
 /* - id : Integer
 - email:string
 - password:string
  */
-public class User {
+public class User implements Serializable {
     
     private Integer id;
     private String email;

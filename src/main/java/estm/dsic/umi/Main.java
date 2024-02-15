@@ -2,8 +2,11 @@ package estm.dsic.umi;
 
 import estm.dsic.umi.beans.Account;
 import estm.dsic.umi.beans.User;
-import estm.dsic.umi.business.DefaultAccountService;
+import estm.dsic.umi.business.*;
 import estm.dsic.umi.dao.UserDaoJDBC;
+
+import java.rmi.Naming;
+import java.rmi.registry.LocateRegistry;
 
 public class Main {
     public static void main(String[] args) {
@@ -43,7 +46,7 @@ public class Main {
         System.out.println(DefaultAccountService.getInstance().getUserAccounts(userMesbahi));*/
 
         /*MAKE A DEPOSIT*/
-        User userMesbahi = new User();
+        /*User userMesbahi = new User();
 
         userMesbahi.setId(2);
 
@@ -51,11 +54,32 @@ public class Main {
                 DefaultAccountService.getInstance().getUserAccounts(userMesbahi)
         );
 
-        Account account = userMesbahi.getAccounts().get(0);
+        Account account = userMesbahi.getAccounts().get(0);*/
         // deposit 7000.0
         /*System.out.println(DefaultAccountService.getInstance().deposit(account, 1000.0));*/
 
         // withdraw 5000.0
-        System.out.println(DefaultAccountService.getInstance().withdraw(account, 500.0));
+        // System.out.println(DefaultAccountService.getInstance().withdraw(account, 500.0));
+
+        try {
+            // Create and export the remote object
+            AuthService defaultAuthService = DefaultAuthService.getInstance();
+            AccountService accountService = DefaultAccountService.getInstance();
+            TransactionService transactionService = DefaultTransactionService.getInstance();
+
+            // Create the RMI registry on the default port (1099)
+            LocateRegistry.createRegistry(1099);
+
+            // Bind the remote object to the RMI registry with a specific name
+            Naming.rebind("defaultAuthService", defaultAuthService);
+            Naming.rebind("accountService", accountService);
+            Naming.rebind("transactionService", transactionService);
+
+
+            System.out.println("Server is ready!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
