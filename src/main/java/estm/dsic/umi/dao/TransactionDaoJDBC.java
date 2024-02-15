@@ -33,7 +33,7 @@ preparedStatement.setInt(3, transaction.getSrcAccount());
                 preparedStatement.setString(4, transaction.getTransactionType());
                 preparedStatement.setDate(5, new Date(transaction.getDate().getTime()));
 
-                transaction.setDestAccount(-1);
+                transaction.setDestAccount(transaction.getSrcAccount());
 
             } else {
                 query = "INSERT INTO transaction (amount, srcAccount, destAccount, transactionType, date) VALUES (?, ?, ?, ?, ?)";
