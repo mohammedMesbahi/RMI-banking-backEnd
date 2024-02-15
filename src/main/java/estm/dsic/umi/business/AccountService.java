@@ -1,13 +1,17 @@
 package estm.dsic.umi.business;
 
 import estm.dsic.umi.beans.Account;
+import estm.dsic.umi.beans.Transaction;
+import estm.dsic.umi.beans.User;
+
+import java.util.List;
+
 public interface AccountService {
-    public void deposit(Account Account, Double amount);
+    public Transaction deposit(Account Account, Double amount);
     public void withdraw(Account Account, Double amount);
     public void transfer(Account fromAccount, Account toAccount, Double amount);
 
-    public Account getAccountById(Integer id);
     public Account createAccount(Account account);
-    public Account getAccount(Account account);
+    public List<Account> getUserAccounts(User user);
     
 }

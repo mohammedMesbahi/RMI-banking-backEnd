@@ -10,21 +10,37 @@ import java.util.List;
 import estm.dsic.umi.beans.Account;
 import estm.dsic.umi.beans.User;
 
-public class AccountDoaJDBC implements AccountDoa {
-    private static AccountDoaJDBC instance;
+public class AccountDaoJDBC implements AccountDao {
+    private static AccountDaoJDBC instance;
     private Connection connection;
-    public AccountDoaJDBC(Connection connection) {
+    public AccountDaoJDBC(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public void create(Account account) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+    public Account create(Account account) {
+        try {
+            // use prepared statement
+            String query = "INSERT INTO account (balance, ownerId) VALUES (?, ?)";
+            java.sql.PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement.setDouble(1, account.getBalance());
+            statement.setInt(2, account.getOwnerId());
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
+            if (resultSet.next()) {
+                account.setId(resultSet.getInt(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while creating account");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error while creating account" + e.getMessage());
+        }
+        return account;
     }
 
     @Override
-    public List<Account> getAllAccountsOfAUser(User user) {
+    public List<Account> getAccountsOfAUser(User user) {
         List<Account> accounts = new ArrayList<Account>();
         try {
             String query = "SELECT * FROM account WHERE account.ownerId = " + user.getId();
@@ -36,7 +52,7 @@ public class AccountDoaJDBC implements AccountDoa {
                 account.setBalance(resultSet.getDouble("balance"));
                 account.setOwnerId(user.getId());
                 account.setTransactions(
-                    TransactionDoaJDBC.getInstance().getAllTransactionsOfAnAccount(account)
+                    TransactionDaoJDBC.getInstance().getAllTransactionsOfAnAccount(account)
                 );
                 accounts.add(account);
             }
@@ -49,9 +65,9 @@ public class AccountDoaJDBC implements AccountDoa {
         return accounts;
     }
 
-    public static AccountDoaJDBC getInstance() {
+    public static AccountDaoJDBC getInstance() {
         if (instance == null)
-            instance = new AccountDoaJDBC(JDBCconnection.getConnection());
+            instance = new AccountDaoJDBC(JDBCconnection.getConnection());
         return instance;
     }
 

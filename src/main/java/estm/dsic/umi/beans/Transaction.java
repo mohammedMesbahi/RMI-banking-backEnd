@@ -3,6 +3,9 @@ package estm.dsic.umi.beans;
 import java.util.Date;
 
 public class Transaction {
+    public static final String DEPOSIT = "deposit";
+    public static final String WITHDRAW = "withdraw";
+    public static final String TRANSFER = "transfer";
     private Integer id;
     private Integer srcAccount;
     private Integer destAccount;

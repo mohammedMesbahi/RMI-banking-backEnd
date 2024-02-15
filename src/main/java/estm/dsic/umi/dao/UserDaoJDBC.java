@@ -4,17 +4,17 @@ import java.sql.*;
 
 import estm.dsic.umi.beans.User;
 
-public class UserDoaJDBC implements UserDao {
+public class UserDaoJDBC implements UserDao {
     private Connection connection;
-    private static UserDoaJDBC instance;
+    private static UserDaoJDBC instance;
 
-    private UserDoaJDBC(Connection connection) {
+    private UserDaoJDBC(Connection connection) {
         this.connection = connection;
     }
 
-    public static UserDoaJDBC getInstance() {
+    public static UserDaoJDBC getInstance() {
         if (instance == null)
-            instance = new UserDoaJDBC(JDBCconnection.getConnection());
+            instance = new UserDaoJDBC(JDBCconnection.getConnection());
         return instance;
     }
 
@@ -33,7 +33,7 @@ public class UserDoaJDBC implements UserDao {
                 user.setEmail(resultSet.getString("email"));
                 user.setPassword(resultSet.getString("password"));
                 user.setAccounts(
-                        AccountDoaJDBC.getInstance().getAllAccountsOfAUser(user)
+                        AccountDaoJDBC.getInstance().getAccountsOfAUser(user)
                 );
             }
         } catch (SQLException e) {
@@ -83,6 +83,31 @@ public class UserDoaJDBC implements UserDao {
                 user1.setPassword(resultSet.getString("password"));
             }
 
+        } catch (SQLException e) {
+            System.out.println("Error while getting user");
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+        }
+        return user;
+    }
+
+    @Override
+    public User getByEmailAndPassword(String email, String password) {
+        User user = null;
+        try {
+            String query = "SELECT * FROM user WHERE email = ? AND password = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, password);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+            }
         } catch (SQLException e) {
             System.out.println("Error while getting user");
             System.out.println(e.getMessage());

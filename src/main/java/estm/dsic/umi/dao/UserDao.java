@@ -6,4 +6,5 @@ public interface UserDao {
     User create(User user);
     User getById(Integer id);
     User get(User user);
+    User getByEmailAndPassword(String email, String password);
 }
